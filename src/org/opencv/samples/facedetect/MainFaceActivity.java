@@ -70,5 +70,13 @@ public class MainFaceActivity extends ActionBarActivity {
         Log.i("MainActivity", "MainActivity.call Relative Layout — done with creating intent");
         startActivity(intent);
     }
+    
+    /** Called when the user clicks the OpenGL */
+    public void callOpenGL(View view) {
+        Intent intent = new Intent(this, OpenGLActivity.class);
+
+        Log.i("MainActivity", "MainActivity.call OPen GL — done with creating intent");
+        startActivity(intent);
+    }
 
 }

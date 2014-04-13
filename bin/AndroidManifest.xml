@@ -33,6 +33,10 @@
             android:name="org.opencv.samples.facedetect.FdActivity"
             android:label="@string/title_activity_main_face" >
         </activity>
+         <activity
+            android:name="org.opencv.samples.facedetect.OpenGLActivity"
+            android:label="@string/title_activity_openGL" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.CAMERA" />

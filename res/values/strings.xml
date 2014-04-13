@@ -7,5 +7,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_main_face">MainActivityFace</string>
     <string name="button_callRelativeLayout">Start View 1 : Relative Layout </string>
+    <string name="button_callOpenGL">Start View 2 : OpenGL </string>
+    <string name="title_activity_openGL">OpenGL Triangle Activity</string>
 
 </resources>
