@@ -1021,7 +1021,7 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060027;
-        public static final int action_settings=0x7f060041;
+        public static final int action_settings=0x7f060042;
         public static final int activity_chooser_view_content=0x7f060028;
         public static final int always=0x7f06000b;
         public static final int any=0x7f06001a;
@@ -1071,6 +1071,7 @@ containing a value of this type.
         public static final int split_action_bar=0x7f060021;
         public static final int submit_area=0x7f06003c;
         public static final int tabMode=0x7f060002;
+        public static final int textView1=0x7f060041;
         public static final int title=0x7f06002e;
         public static final int top_action_bar=0x7f060023;
         public static final int up=0x7f060024;
@@ -1126,13 +1127,14 @@ containing a value of this type.
         public static final int abc_popup_menu_item_layout=0x7f030014;
         public static final int abc_search_dropdown_item_icons_2line=0x7f030015;
         public static final int abc_search_view=0x7f030016;
-        public static final int activity_main=0x7f030017;
+        public static final int activity_main_face=0x7f030017;
         public static final int face_detect_surface_view=0x7f030018;
-        public static final int fragment_main=0x7f030019;
+        public static final int fragment_main_face=0x7f030019;
         public static final int support_simple_spinner_dropdown_item=0x7f03001a;
     }
     public static final class menu {
         public static final int main=0x7f0d0000;
+        public static final int main_face=0x7f0d0001;
     }
     public static final class raw {
         public static final int haarcascade_eye=0x7f050000;
@@ -1183,8 +1185,10 @@ containing a value of this type.
         public static final int abc_shareactionprovider_share_with_application=0x7f0b000b;
         public static final int action_settings=0x7f0b0010;
         public static final int app_name=0x7f0b000d;
+        public static final int button_callRelativeLayout=0x7f0b0012;
         public static final int hello_world=0x7f0b000f;
         public static final int title_activity_main=0x7f0b000e;
+        public static final int title_activity_main_face=0x7f0b0011;
     }
     public static final class style {
         /**  Mimic text appearance in select_dialog_item.xml 

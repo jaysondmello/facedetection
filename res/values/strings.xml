@@ -3,7 +3,9 @@
 
     <string name="app_name">OCV Face Detection</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">Advanced Computer Graphics : Spring 2014</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_main_face">MainActivityFace</string>
+    <string name="button_callRelativeLayout">Start View 1 : Relative Layout </string>
 
 </resources>
