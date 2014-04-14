@@ -11,14 +11,14 @@
         android:resizeable="true"
         android:smallScreens="true" />
 
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="11" />
 
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         <activity
-            android:name="org.opencv.samples.facedetect.MainFaceActivity"
+            android:name="com.example.android.fragments.MainFaceActivity"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat" 
@@ -30,11 +30,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.opencv.samples.facedetect.FdActivity"
+            android:name="com.example.android.fragments.FdActivity"
             android:label="@string/title_activity_main_face" >
         </activity>
          <activity
-            android:name="org.opencv.samples.facedetect.OpenGLActivity"
+            android:name="com.example.android.fragments.OpenGLActivity"
+            android:label="@string/title_activity_openGL" >
+        </activity>
+         <activity
+            android:name="com.example.android.fragments.FraggerActivity"
             android:label="@string/title_activity_openGL" >
         </activity>
     </application>
