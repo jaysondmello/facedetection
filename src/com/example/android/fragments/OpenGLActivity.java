@@ -1,12 +1,15 @@
-package org.opencv.samples.facedetect;
+package com.example.android.fragments;
 
 
 
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 
 class MyGLSurfaceView extends GLSurfaceView {
@@ -31,20 +34,27 @@ class MyGLSurfaceView extends GLSurfaceView {
 }
 
 
-public class OpenGLActivity extends Activity { // OPENGL ES 2.0
+public class OpenGLActivity extends Fragment { // OPENGL ES 2.0
 
     private GLSurfaceView mGLView;
-
+    
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+    	return inflater.inflate(R.layout.activity_open_gl, container, false);
+    }
+    
+    @Override
+    public void onStart() {
+        super.onStart();
         
         Log.i("OpenGLActivity", "OpenGLActivity.onCreate() — Entered OpenGLActivity");
 
         // Create a GLSurfaceView instance and set it
         // as the ContentView for this Activity.
-        mGLView = new MyGLSurfaceView(this);
-        setContentView(mGLView);
+        mGLView = new MyGLSurfaceView(this.getActivity());
+        //setContentView(mGLView);
+        //this.getActivity().setContentView(mGLView);
         Log.i("OpenGLActivity", "OpenGLActivity.onCreate() — Leaving OpenGLActivity");
     }
 }

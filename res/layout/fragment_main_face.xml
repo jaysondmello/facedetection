@@ -26,6 +26,7 @@
         android:text="@string/button_callRelativeLayout" />
 
     <Button
+        android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/button1"
@@ -34,5 +35,15 @@
         android:layout_marginTop="34dp"
         android:onClick="callOpenGL"
         android:text="@string/button_callOpenGL" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button2"
+        android:layout_alignRight="@+id/button2"
+        android:layout_below="@+id/button2"
+        android:layout_marginTop="18dp"
+        android:onClick="callFragger"
+        android:text="@string/button_fragger" />
 
 </RelativeLayout>

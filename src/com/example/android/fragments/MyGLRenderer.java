@@ -1,4 +1,4 @@
-package org.opencv.samples.facedetect;
+package com.example.android.fragments;
 
 import javax.microedition.khronos.opengles.GL10;
 

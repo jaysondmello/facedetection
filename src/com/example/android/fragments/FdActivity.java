@@ -1,13 +1,10 @@
-package org.opencv.samples.facedetect;
+package com.example.android.fragments;
 
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -23,14 +20,15 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.objdetect.CascadeClassifier;
 
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.WindowManager;
+import android.view.View;
+import android.view.ViewGroup;
 
 class Coordinates
 {
@@ -38,7 +36,7 @@ class Coordinates
 	int y;
 }
 
-public class FdActivity extends Activity implements CvCameraViewListener2,GLSurfaceView.Renderer {
+public class FdActivity extends Fragment implements CvCameraViewListener2 {
 
     private static final String    TAG                 = "OCVSample::Activity";
     private static final Scalar    FACE_RECT_COLOR     = new Scalar(230, 230, 0, 255);
@@ -73,7 +71,7 @@ public class FdActivity extends Activity implements CvCameraViewListener2,GLSurf
 
     private CameraBridgeViewBase   mOpenCvCameraView;
     
-    private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
+    private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(getActivity()) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
@@ -87,7 +85,7 @@ public class FdActivity extends Activity implements CvCameraViewListener2,GLSurf
                     try {
                         // load cascade file from application resources
                         InputStream is = getResources().openRawResource(R.raw.lbpcascade_frontalface);
-                        File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
+                        File cascadeDir = getActivity().getDir("cascade", Context.MODE_PRIVATE);
                         mCascadeFile = new File(cascadeDir, "lbpcascade_frontalface.xml");
                         FileOutputStream os = new FileOutputStream(mCascadeFile);
 
@@ -111,7 +109,7 @@ public class FdActivity extends Activity implements CvCameraViewListener2,GLSurf
                         /************************************/
                         
                         is = getResources().openRawResource(R.raw.haarcascade_eye);
-                        File cascadeDir2 = getDir("cascade", Context.MODE_PRIVATE);
+                        File cascadeDir2 = getActivity().getDir("cascade", Context.MODE_PRIVATE);
                         mCascadeFileEye = new File(cascadeDir2, "haarcascade_eye.xml");
                         os = new FileOutputStream(mCascadeFileEye);
                         buffer = new byte[4096];
@@ -134,7 +132,7 @@ public class FdActivity extends Activity implements CvCameraViewListener2,GLSurf
                         /************************************/
                         
                         is = getResources().openRawResource(R.raw.haarcascade_mcs_mouth);
-                        File cascadeDir3 = getDir("cascade", Context.MODE_PRIVATE);
+                        File cascadeDir3 = getActivity().getDir("cascade", Context.MODE_PRIVATE);
                         mCascadeFileMouth = new File(cascadeDir2, "haarcascade_mcs_mouth.xml");
                         os = new FileOutputStream(mCascadeFileMouth);
                         buffer = new byte[4096];
@@ -178,18 +176,24 @@ public class FdActivity extends Activity implements CvCameraViewListener2,GLSurf
 
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
+    
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+    	return inflater.inflate(R.layout.face_detect_surface_view, container, false);
+    }
 
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onStart() {
         Log.i(TAG, "called onCreate");
-        super.onCreate(savedInstanceState); // send the bundle to the super class Activity
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        super.onStart(); // send the bundle to the super class Activity
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        setContentView(R.layout.face_detect_surface_view);
+       // setContentView(R.layout.face_detect_surface_view);
 
 
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.fd_activity_surface_view);
+        mOpenCvCameraView = (CameraBridgeViewBase) getView().findViewById(R.id.fd_activity_surface_view);
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
 
@@ -205,7 +209,7 @@ public class FdActivity extends Activity implements CvCameraViewListener2,GLSurf
     public void onResume()
     {
         super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, getActivity(), mLoaderCallback);
     }
 
     public void onDestroy() {
@@ -393,7 +397,6 @@ public class FdActivity extends Activity implements CvCameraViewListener2,GLSurf
         return mRgba; // mRgba is the final frame, maybe send this to openGL ?
     }
 
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "called onCreateOptionsMenu");
         mItemFace50 = menu.add("Face size 50%");
@@ -442,21 +445,4 @@ public class FdActivity extends Activity implements CvCameraViewListener2,GLSurf
         }
     }
 
-	@Override
-	public void onDrawFrame(GL10 arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		// TODO Auto-generated method stub
-		
-	}
 }

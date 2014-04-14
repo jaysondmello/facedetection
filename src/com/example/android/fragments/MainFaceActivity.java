@@ -1,4 +1,4 @@
-package org.opencv.samples.facedetect;
+package com.example.android.fragments;
 
 
 
@@ -76,6 +76,13 @@ public class MainFaceActivity extends ActionBarActivity {
         Intent intent = new Intent(this, OpenGLActivity.class);
 
         Log.i("MainActivity", "MainActivity.call OPen GL — done with creating intent");
+        startActivity(intent);
+    }
+    
+    public void callFragger(View view) {
+        Intent intent = new Intent(this, FraggerActivity.class);
+
+        Log.i("MainActivity", "MainActivity.call Fragger — done with creating intent");
         startActivity(intent);
     }
 

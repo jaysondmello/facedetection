@@ -1,4 +1,4 @@
-package org.opencv.samples.facedetect;
+package com.example.android.fragments;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
