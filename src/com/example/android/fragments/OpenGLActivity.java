@@ -26,7 +26,7 @@ class MyGLSurfaceView extends GLSurfaceView {
         setRenderer(new MyGLRenderer());
         
         // Render the view only when there is a change in the drawing data, removed for rotation of object
-        // setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY); 
+       // setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY); 
          Log.i("MyGLSurfaceView", "MyGLSurfaceView : setRenderMode Set");
          
          Log.i("MyGLSurfaceView", "MyGLSurfaceView : Left the constructor");
@@ -37,10 +37,12 @@ class MyGLSurfaceView extends GLSurfaceView {
 public class OpenGLActivity extends Fragment { // OPENGL ES 2.0
 
     private GLSurfaceView mGLView;
-    
-    @Override
+ 
+        
+   @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+	    mGLView = new MyGLSurfaceView(this.getActivity());
     	return inflater.inflate(R.layout.activity_open_gl, container, false);
     }
     
@@ -52,9 +54,11 @@ public class OpenGLActivity extends Fragment { // OPENGL ES 2.0
 
         // Create a GLSurfaceView instance and set it
         // as the ContentView for this Activity.
-        mGLView = new MyGLSurfaceView(this.getActivity());
+      
         //setContentView(mGLView);
-        //this.getActivity().setContentView(mGLView);
+        this.getActivity().setContentView(mGLView);
+        
+       //(GLSurfaceView) getView().findViewById(R.id.fd_activity_surface_view);
         Log.i("OpenGLActivity", "OpenGLActivity.onCreate() — Leaving OpenGLActivity");
     }
 }

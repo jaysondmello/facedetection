@@ -8,8 +8,9 @@
     <string name="title_activity_main_face">MainActivityFace</string>
     <string name="button_callRelativeLayout">Start View 1 : Relative Layout </string>
     <string name="button_callOpenGL">Start View 2 : OpenGL </string>
-   <string name="button_fragger">Fragger </string>
+    <string name="button_fragger">Fragger </string>
     <string name="title_activity_openGL">OpenGL Triangle Activity</string>
-    
+    <string name="title_activity_texture">TextureActivity</string>
+    <string name="title_activity_test_main">TestMainActivity</string>
 
 </resources>

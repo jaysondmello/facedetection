@@ -186,7 +186,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
     /** Called when the activity is first created. */
     @Override
     public void onStart() {
-        Log.i(TAG, "called onCreate");
+        Log.i(TAG, "called onStart");
         super.onStart(); // send the bundle to the super class Activity
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
