@@ -20,7 +20,8 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.objdetect.CascadeClassifier;
 
-import android.app.Fragment;
+import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -70,6 +71,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
     private int                    mAbsoluteFaceSize   = 0;
 
     private CameraBridgeViewBase   mOpenCvCameraView;
+    private PointInterface 		   eyeValue1;
     
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(getActivity()) {
         @Override
@@ -184,6 +186,15 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
     }
 
     /** Called when the activity is first created. */
+    
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        
+        eyeValue1 = (PointInterface)activity; 
+       
+    }
+    
     @Override
     public void onStart() {
         Log.i(TAG, "called onStart");
@@ -321,7 +332,11 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                 	eyesArray[j].x += facesArray[i].x;
                 	eyesArray[j].y += facesArray[i].y;
                 	
-                	Core.rectangle(mRgba, eyesArray[j].tl(), eyesArray[j].br(), FACE_RECT_COLOR, 3); // draw a rectangle        
+                	Core.rectangle(mRgba, eyesArray[j].tl(), eyesArray[j].br(), FACE_RECT_COLOR, 3); // draw a rectangle  
+                	
+                	// send data via interface
+                	Log.i(TAG, "Sending data from fdactivity");
+                	eyeValue1.sendfromSource(eyesArray[j].x);// send only x now
                 	
                 	// Store Eye positions in Screen Co-ordinate Array
                 	//eyeScreenCoordinates[j].x = eyesArray[j].x;

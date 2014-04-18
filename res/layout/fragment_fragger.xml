@@ -12,7 +12,7 @@
         android:layout_width="0dip" 
         />
  <fragment android:name="com.example.android.fragments.TextureActivity"
-              android:id="@+id/title_activity_fragger"
+              android:id="@+id/title_activity_TextureActivity"
               android:layout_weight="1.95"
               android:layout_width="0dip" 
               android:layout_height="match_parent" />

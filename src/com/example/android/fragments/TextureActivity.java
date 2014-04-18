@@ -14,7 +14,7 @@ import javax.microedition.khronos.opengles.GL11;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -319,7 +319,7 @@ class RenderThread extends Thread {
 public class TextureActivity extends Fragment implements TextureView.SurfaceTextureListener {
 
 	
-	   private static final String TAG = null;
+	   private static final String TAG = "TextureActivity";
 	private TextureView myTexture;
 	   private Camera mCamera;
 	private RenderThread mRenderThread;
@@ -354,7 +354,7 @@ public class TextureActivity extends Fragment implements TextureView.SurfaceText
 	@Override
 	   public void onSurfaceTextureAvailable(SurfaceTexture surface, int arg1,
 	   int arg2) {
-		  Log.i(TAG, "TextureActivity : Entered onSurfaceTextureAvailable");
+		  Log.i(TAG, "Entered onSurfaceTextureAvailable");
 		  new RenderThread(surface).start();
 	     
 
@@ -363,7 +363,7 @@ public class TextureActivity extends Fragment implements TextureView.SurfaceText
 	   @Override
 	   public boolean onSurfaceTextureDestroyed(SurfaceTexture arg0) {
 	      
-	      Log.i(TAG, "TextureActivity : onSurfaceTextureDestroyed");
+	      Log.i(TAG, "onSurfaceTextureDestroyed");
 	      return true;
 	   }
 
@@ -381,6 +381,12 @@ public class TextureActivity extends Fragment implements TextureView.SurfaceText
 	public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void changeParamsreceivedfromInterface(int val)
+	{
+		  Log.i(TAG, "Value received from Interface");
+	      
 	}
 
 }

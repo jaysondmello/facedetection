@@ -2,15 +2,21 @@ package com.example.android.fragments;
 
 
 import android.os.Bundle;
+
+
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class FraggerActivity extends FragmentActivity {
+public class FraggerActivity extends FragmentActivity implements PointInterface {
+
+	private static final String TAG = "FraggerActivity";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,22 @@ public class FraggerActivity extends FragmentActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public void sendfromSource(int val)
+	{
+		 
+		TextureActivity openGLFrag = (TextureActivity)getSupportFragmentManager().findFragmentById(R.id.title_activity_TextureActivity);
+		
+		if(openGLFrag == null)
+		{
+			 Log.e(TAG, "Could not find the fragment!");
+		}
+		else
+		{
+		openGLFrag.changeParamsreceivedfromInterface(val);
+		}
+
 	}
 
 	/**
