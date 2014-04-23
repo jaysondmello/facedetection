@@ -49,7 +49,7 @@ public class FraggerActivity extends FragmentActivity implements PointInterface 
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void sendfromSource(int val)
+	public void sendfromSource(Face[] val)
 	{
 		 
 		TextureActivity openGLFrag = (TextureActivity)getSupportFragmentManager().findFragmentById(R.id.title_activity_TextureActivity);

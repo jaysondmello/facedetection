@@ -39,7 +39,7 @@ class Coordinates
 
 public class FdActivity extends Fragment implements CvCameraViewListener2 {
 
-    private static final String    TAG                 = "OCVSample::Activity";
+    private static final String    TAG                 = "FdActivity";
     private static final Scalar    FACE_RECT_COLOR     = new Scalar(230, 230, 0, 255);
     private static final Scalar    MOUTH_RECT_COLOR     = new Scalar(245, 10, 0, 255);
     public static final int        JAVA_DETECTOR       = 0;
@@ -71,7 +71,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
     private int                    mAbsoluteFaceSize   = 0;
 
     private CameraBridgeViewBase   mOpenCvCameraView;
-    private PointInterface 		   eyeValue1;
+    private PointInterface 		   cordinateData;
     
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(getActivity()) {
         @Override
@@ -191,7 +191,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         
-        eyeValue1 = (PointInterface)activity; 
+        cordinateData = (PointInterface)activity; 
        
     }
     
@@ -253,7 +253,9 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
             mNativeDetectorFace.setMinFaceSize(mAbsoluteFaceSize);
         }
         
-       //Log.i(TAG,"Frame Width = "+mGray.width() + "Frame Height = " + mGray.rows()); // get Frame Width and Height
+       double frameWidth =  mGray.width();
+       double frameHeight = mGray.rows();
+      // Log.i(TAG,"Frame Width = "+mGray.width() + "Frame Height = " + mGray.rows()); // get Frame Width and Height 544/544
 
         MatOfRect faces = new MatOfRect();
 
@@ -278,10 +280,32 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
         {
         	Core.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3); // draw a rectangle
         }
- 
+        
+       
+        Face[] sendObj = 	 new Face[facesArray.length]; 
+        // init all objects
+        	for(int z = 0; z< sendObj.length;z++)
+        	{
+        		sendObj[z] = new Face();
+        	} 
+        
+        
+        // send face data to OpenGL
+       for (int i = 0; i <  facesArray.length; i++ )
+       {
+        	sendObj[i].facePoints[0].x = (facesArray[i].tl().x) / frameWidth;
+        	sendObj[i].facePoints[0].y = (facesArray[i].tl().y) / frameHeight;
+        	sendObj[i].facePoints[1].x = (facesArray[i].br().x) / frameWidth;
+        	sendObj[i].facePoints[1].y = (facesArray[i].br().y) / frameHeight;     	
+        }
+    
+        
+        
        // eye detection in face
         if (facesArray.length > 0)
         {
+                 
+        	
         	for(int i = 0; i < facesArray.length; i++)
         	{
         		// will divide face detected into two halves, mouth detection in lower half
@@ -333,19 +357,30 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                 	eyesArray[j].y += facesArray[i].y;
                 	
                 	Core.rectangle(mRgba, eyesArray[j].tl(), eyesArray[j].br(), FACE_RECT_COLOR, 3); // draw a rectangle  
-                	
-                	// send data via interface
-                	Log.i(TAG, "Sending data from fdactivity");
-                	eyeValue1.sendfromSource(eyesArray[j].x);// send only x now
-                	
-                	// Store Eye positions in Screen Co-ordinate Array
-                	//eyeScreenCoordinates[j].x = eyesArray[j].x;
-                	//eyeScreenCoordinates[j].y = eyesArray[j].y;
-                	
+
                 	//Log.i(TAG, "Eye Found at ("+eyesArray[j].x+","+eyesArray[j].y+")");
                 }
-                
-                
+              
+   
+               for (int j = 0; j < eyesArray.length; j++)           // left and right eye
+                {
+                	if(j==0)
+                	{
+                	sendObj[i].gotRightEye = true;
+                	sendObj[i].rightEye[0].x = (eyesArray[j].tl().x) / frameWidth;
+                	sendObj[i].rightEye[0].y = (eyesArray[j].tl().y) / frameHeight;
+                	sendObj[i].rightEye[1].x = (eyesArray[j].br().x) / frameWidth;
+                	sendObj[i].rightEye[1].y = (eyesArray[j].br().y) / frameHeight;
+                	}
+                	if(j==1)
+                	{
+                	sendObj[i].gotLeftEye = true;
+                    sendObj[i].leftEye[0].x = (eyesArray[j].tl().x) / frameWidth;
+                    sendObj[i].leftEye[0].y = (eyesArray[j].tl().y) / frameHeight;
+                    sendObj[i].leftEye[1].x = (eyesArray[j].br().x) / frameWidth;
+                    sendObj[i].leftEye[1].y = (eyesArray[j].br().y) / frameHeight;	
+                	}              
+                }            
         	}
         	
         	
@@ -400,15 +435,45 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                     {
                     	mouthArray[j].x += lowerHalfx; // add offset of faces to the detected mouth / eye co-ordinates
                     	mouthArray[j].y += lowerHalfy;
+	
+                    	Core.rectangle(mRgba, mouthArray[j].tl(), mouthArray[j].br(), MOUTH_RECT_COLOR, 3); // draw a rectangle        
                     	
-                    	Core.rectangle(mRgba, mouthArray[j].tl(), mouthArray[j].br(), MOUTH_RECT_COLOR, 3); // draw a rectangle               	
-                    }
-                    
+                    	// send mouth co-oridinates
+                    	sendObj[i].gotMouth = true;
+                    	sendObj[i].mouthPoints[0].x = (mouthArray[j].tl().x) / frameWidth;
+                    	sendObj[i].mouthPoints[0].y = (mouthArray[j].tl().y) / frameHeight;
+                    	sendObj[i].mouthPoints[1].x = (mouthArray[j].br().x) / frameWidth;
+                    	sendObj[i].mouthPoints[1].y = (mouthArray[j].br().y) / frameHeight;   	
+                    }              
             	}
             }
       	
         }
-           
+          
+        
+        /*
+        // debug display 
+        for (int i = 0; i <  facesArray.length; i++ )
+        {
+        	Log.i(TAG, "Face Co-ordinates TL"+ sendObj[i].facePoints[0].x + "," +  sendObj[i].facePoints[0].y);
+        	Log.i(TAG, "Face Co-ordinates BR"+ sendObj[i].facePoints[1].x + "," +  sendObj[i].facePoints[1].y);
+        	
+        	if(sendObj[i].gotMouth == true)
+        	{
+        		Log.i(TAG, "Mouth Co-ordinates"+ sendObj[i].mouthPoints[0].x + "," +  sendObj[i].mouthPoints[0].y);
+        		Log.i(TAG, "Mouth Co-ordinates"+ sendObj[i].mouthPoints[1].x + "," +  sendObj[i].mouthPoints[1].y);
+        	}
+        }
+        */
+        
+        // send data if available
+        if(sendObj.length > 0)
+        {
+        	cordinateData.sendfromSource(sendObj);
+        	Log.i(TAG, "Data Sent from FdActivity to Texture View");
+        }
+        
+        
         return mRgba; // mRgba is the final frame, maybe send this to openGL ?
     }
 

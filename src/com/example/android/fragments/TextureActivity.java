@@ -51,13 +51,13 @@ class RenderThread extends Thread {
     private TextureView mTextureView;
     private FloatBuffer mVertices;
     private final float[] mVerticesData = {
-            -0.5f, 0.5f, 0.0f, 
-           +0.5f, +0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
+            -1.0f, 1.0f, 0.0f, 
+           +1.0f, +1.0f, 0.0f,
+           1.0f, -1.0f, 0.0f,
             
-            0.5f, -0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f,
-            -0.5f, 0.5f, 0.0f
+           1.0f, -1.0f, 0.0f,
+            -1.0f, -1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f
     };
 
     public RenderThread(SurfaceTexture surface) {
@@ -383,7 +383,7 @@ public class TextureActivity extends Fragment implements TextureView.SurfaceText
 		
 	}
 	
-	public void changeParamsreceivedfromInterface(int val)
+	public void changeParamsreceivedfromInterface(Face[] val)
 	{
 		  Log.i(TAG, "Value received from Interface");
 	      
