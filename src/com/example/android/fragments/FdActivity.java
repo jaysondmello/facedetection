@@ -237,6 +237,23 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
         mGray.release();
         mRgba.release();
     }
+    
+    public double calcScreen2Cart(double val, double screenSize, int type)
+    {
+    	double answer;
+    	
+    	if(type == 1) // x coordinate
+    	{
+    		answer = (val - screenSize/2);
+    		answer /= screenSize;
+    		return answer*1.8;
+    	}
+    	else
+    	{
+    		answer = ((screenSize/2) - val)/screenSize; // 0 for y corindates
+    		return answer;
+    	}
+    }
 
     @SuppressWarnings("null")
     // Frame Width = 1280 Frame Height = 720 [ Screen Co-ordinates ]
@@ -255,7 +272,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
         
        double frameWidth =  mGray.width();
        double frameHeight = mGray.rows();
-      // Log.i(TAG,"Frame Width = "+mGray.width() + "Frame Height = " + mGray.rows()); // get Frame Width and Height 544/544
+      Log.i(TAG,"Frame Width = "+mGray.width() + "Frame Height = " + mGray.rows()); // get Frame Width and Height 544/544
 
         MatOfRect faces = new MatOfRect();
 
@@ -293,10 +310,10 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
         // send face data to OpenGL
        for (int i = 0; i <  facesArray.length; i++ )
        {
-        	sendObj[i].facePoints[0].x = (facesArray[i].tl().x) / frameWidth;
-        	sendObj[i].facePoints[0].y = (facesArray[i].tl().y) / frameHeight;
-        	sendObj[i].facePoints[1].x = (facesArray[i].br().x) / frameWidth;
-        	sendObj[i].facePoints[1].y = (facesArray[i].br().y) / frameHeight;     	
+        	sendObj[i].facePoints[0].x = calcScreen2Cart(facesArray[i].tl().x, frameWidth,1);
+        	sendObj[i].facePoints[0].y = calcScreen2Cart(facesArray[i].tl().y, frameHeight,0);
+        	sendObj[i].facePoints[1].x = calcScreen2Cart(facesArray[i].br().x, frameWidth,1); 
+        	sendObj[i].facePoints[1].y = calcScreen2Cart(facesArray[i].br().y,frameHeight, 0);     	
         }
     
         
@@ -367,18 +384,18 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                 	if(j==0)
                 	{
                 	sendObj[i].gotRightEye = true;
-                	sendObj[i].rightEye[0].x = (eyesArray[j].tl().x) / frameWidth;
-                	sendObj[i].rightEye[0].y = (eyesArray[j].tl().y) / frameHeight;
-                	sendObj[i].rightEye[1].x = (eyesArray[j].br().x) / frameWidth;
-                	sendObj[i].rightEye[1].y = (eyesArray[j].br().y) / frameHeight;
+                	sendObj[i].rightEye[0].x = calcScreen2Cart(eyesArray[j].tl().x,frameWidth,1);
+                	sendObj[i].rightEye[0].y = calcScreen2Cart(eyesArray[j].tl().y,frameHeight,0);
+                	sendObj[i].rightEye[1].x = calcScreen2Cart(eyesArray[j].br().x,frameWidth,1);
+                	sendObj[i].rightEye[1].y = calcScreen2Cart(eyesArray[j].br().y,frameHeight,0);
                 	}
                 	if(j==1)
                 	{
                 	sendObj[i].gotLeftEye = true;
-                    sendObj[i].leftEye[0].x = (eyesArray[j].tl().x) / frameWidth;
-                    sendObj[i].leftEye[0].y = (eyesArray[j].tl().y) / frameHeight;
-                    sendObj[i].leftEye[1].x = (eyesArray[j].br().x) / frameWidth;
-                    sendObj[i].leftEye[1].y = (eyesArray[j].br().y) / frameHeight;	
+                    sendObj[i].leftEye[0].x = calcScreen2Cart(eyesArray[j].tl().x,frameWidth,1);
+                    sendObj[i].leftEye[0].y = calcScreen2Cart(eyesArray[j].tl().y,frameHeight,0);
+                    sendObj[i].leftEye[1].x = calcScreen2Cart(eyesArray[j].br().x,frameWidth,1);
+                    sendObj[i].leftEye[1].y = calcScreen2Cart(eyesArray[j].br().y,frameHeight,0);	
                 	}              
                 }            
         	}
@@ -440,10 +457,10 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                     	
                     	// send mouth co-oridinates
                     	sendObj[i].gotMouth = true;
-                    	sendObj[i].mouthPoints[0].x = (mouthArray[j].tl().x) / frameWidth;
-                    	sendObj[i].mouthPoints[0].y = (mouthArray[j].tl().y) / frameHeight;
-                    	sendObj[i].mouthPoints[1].x = (mouthArray[j].br().x) / frameWidth;
-                    	sendObj[i].mouthPoints[1].y = (mouthArray[j].br().y) / frameHeight;   	
+                    	sendObj[i].mouthPoints[0].x = calcScreen2Cart(mouthArray[j].tl().x,frameWidth,1);
+                    	sendObj[i].mouthPoints[0].y = calcScreen2Cart(mouthArray[j].tl().y,frameHeight,0);
+                    	sendObj[i].mouthPoints[1].x = calcScreen2Cart(mouthArray[j].br().x,frameWidth,1);
+                    	sendObj[i].mouthPoints[1].y = calcScreen2Cart(mouthArray[j].br().y,frameHeight,0);   	
                     }              
             	}
             }
@@ -451,7 +468,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
         }
           
         
-        /*
+        
         // debug display 
         for (int i = 0; i <  facesArray.length; i++ )
         {
@@ -464,7 +481,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
         		Log.i(TAG, "Mouth Co-ordinates"+ sendObj[i].mouthPoints[1].x + "," +  sendObj[i].mouthPoints[1].y);
         	}
         }
-        */
+        
         
         // send data if available
         if(sendObj.length > 0)

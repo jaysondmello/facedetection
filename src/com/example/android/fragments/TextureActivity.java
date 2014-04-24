@@ -49,7 +49,8 @@ class RenderThread extends Thread {
     private GL11 mGl;
     private volatile boolean mFinished;
     private TextureView mTextureView;
-    private FloatBuffer mVertices;
+    private Face dataPoints;
+   
     private final float[] mVerticesData = {
             -1.0f, 1.0f, 0.0f, 
            +1.0f, +1.0f, 0.0f,
@@ -59,18 +60,183 @@ class RenderThread extends Thread {
             -1.0f, -1.0f, 0.0f,
             -1.0f, 1.0f, 0.0f
     };
+    
+    private float[] facePoints;
+    private float[] mouthPoints;
+    private float[] rightEye;
+    private float[] leftEye;
 
     public RenderThread(SurfaceTexture surface) {
         mSurface = surface;
+        
+        dataPoints = new Face(); 
+        
+        facePoints = new float[18];
+    	mouthPoints = new float[18];
+    	rightEye = new float[18];
+    	leftEye = new float[18];
+    }
+   /* 
+    tl.x,tl.y	 ------- br.x,tl.y
+    			|		|
+    			|		|	
+    			|		|
+    tl.x, br.y	------- br.x, br.y
+    */
+    public float[] buildRect(Face dataPoints, int part) //1 = face 2 = mouth 3 = left eye 4 = right eye 
+    {
+    	float [] holder = new float[18];
+    	
+    	if(part == 1)
+    	{
+    	holder[0] = (float)dataPoints.facePoints[0].x; // tl.x, tl.y 
+    	holder[1] = (float)dataPoints.facePoints[0].y;     	  
+    	holder[2] = (float) 0.0; 
+   		
+    	holder[3] = (float)dataPoints.facePoints[1].x; // br.x, tl.y 
+    	holder[4] = (float)dataPoints.facePoints[0].y;     	  
+    	holder[5] = (float)0.0; 
+   	  
+    	holder[6] = (float)dataPoints.facePoints[1].x; // br.x, br.y 
+    	holder[7] = (float)dataPoints.facePoints[1].y;     	  
+    	holder[8] = (float)0.0; 
+   	  
+    	holder[9] = (float)dataPoints.facePoints[1].x; //  br.x, br.y 
+    	holder[10] = (float)dataPoints.facePoints[1].y;     	  
+    	holder[11] = (float)0.0; 
+   	  
+    	holder[12] = (float)dataPoints.facePoints[0].x; // tl.x, br.y 
+    	holder[13] = (float)dataPoints.facePoints[1].y;     	  
+    	holder[14] = (float)0.0; 
+   	  
+    	holder[15] = (float)dataPoints.facePoints[0].x; // tl.x, tl.y 
+    	holder[16] = (float)dataPoints.facePoints[0].y;     	  
+    	holder[17] = (float)0.0; 
+    	}
+    	if(part == 2)
+    	{
+    	holder[0] = (float)dataPoints.mouthPoints[0].x; // tl.x, tl.y 
+    	holder[1] = (float)dataPoints.mouthPoints[0].y;     	  
+    	holder[2] = (float) 0.0; 
+   		
+    	holder[3] = (float)dataPoints.mouthPoints[1].x; // br.x, tl.y 
+    	holder[4] = (float)dataPoints.mouthPoints[0].y;     	  
+    	holder[5] = (float)0.0; 
+   	  
+    	holder[6] = (float)dataPoints.mouthPoints[1].x; // br.x, br.y 
+    	holder[7] = (float)dataPoints.mouthPoints[1].y;     	  
+    	holder[8] = (float)0.0; 
+   	  
+    	holder[9] = (float)dataPoints.mouthPoints[1].x; //  br.x, br.y 
+    	holder[10] = (float)dataPoints.mouthPoints[1].y;     	  
+    	holder[11] = (float)0.0; 
+   	  
+    	holder[12] = (float)dataPoints.mouthPoints[0].x; // tl.x, br.y 
+    	holder[13] = (float)dataPoints.mouthPoints[1].y;     	  
+    	holder[14] = (float)0.0; 
+   	  
+    	holder[15] = (float)dataPoints.mouthPoints[0].x; // tl.x, tl.y 
+    	holder[16] = (float)dataPoints.mouthPoints[0].y;     	  
+    	holder[17] = (float)0.0; 
+    	}  
+    	if(part == 3)
+    	{
+    	holder[0] = (float)dataPoints.leftEye[0].x; // tl.x, tl.y 
+    	holder[1] = (float)dataPoints.leftEye[0].y;     	  
+    	holder[2] = (float) 0.0; 
+   		
+    	holder[3] = (float)dataPoints.leftEye[1].x; // br.x, tl.y 
+    	holder[4] = (float)dataPoints.leftEye[0].y;     	  
+    	holder[5] = (float)0.0; 
+   	  
+    	holder[6] = (float)dataPoints.leftEye[1].x; // br.x, br.y 
+    	holder[7] = (float)dataPoints.leftEye[1].y;     	  
+    	holder[8] = (float)0.0; 
+   	  
+    	holder[9] = (float)dataPoints.leftEye[1].x; //  br.x, br.y 
+    	holder[10] = (float)dataPoints.leftEye[1].y;     	  
+    	holder[11] = (float)0.0; 
+   	  
+    	holder[12] = (float)dataPoints.leftEye[0].x; // tl.x, br.y 
+    	holder[13] = (float)dataPoints.leftEye[1].y;     	  
+    	holder[14] = (float)0.0; 
+   	  
+    	holder[15] = (float)dataPoints.leftEye[0].x; // tl.x, tl.y 
+    	holder[16] = (float)dataPoints.leftEye[0].y;     	  
+    	holder[17] = (float)0.0; 
+    	}  	
+    	if(part == 4)
+    	{
+    	holder[0] = (float)dataPoints.rightEye[0].x; // tl.x, tl.y 
+    	holder[1] = (float)dataPoints.rightEye[0].y;     	  
+    	holder[2] = (float) 0.0; 
+   		
+    	holder[3] = (float)dataPoints.rightEye[1].x; // br.x, tl.y 
+    	holder[4] = (float)dataPoints.rightEye[0].y;     	  
+    	holder[5] = (float)0.0; 
+   	  
+    	holder[6] = (float)dataPoints.rightEye[1].x; // br.x, br.y 
+    	holder[7] = (float)dataPoints.rightEye[1].y;     	  
+    	holder[8] = (float)0.0; 
+   	  
+    	holder[9] = (float)dataPoints.rightEye[1].x; //  br.x, br.y 
+    	holder[10] = (float)dataPoints.rightEye[1].y;     	  
+    	holder[11] = (float)0.0; 
+   	  
+    	holder[12] = (float)dataPoints.rightEye[0].x; // tl.x, br.y 
+    	holder[13] = (float)dataPoints.rightEye[1].y;     	  
+    	holder[14] = (float)0.0; 
+   	  
+    	holder[15] = (float)dataPoints.rightEye[0].x; // tl.x, tl.y 
+    	holder[16] = (float)dataPoints.rightEye[0].y;     	  
+    	holder[17] = (float)0.0; 
+    	}  	
+   	  	return holder;	  
+    }
+    
+    
+    
+    
+    public void updatePoints(Face dataVals)
+    {
+    	//synchronized(dataPoints)
+    	//{
+    	dataPoints = dataVals;
+    		
+    	facePoints = buildRect(dataPoints,1);
+    	
+    	if(dataPoints.gotMouth == true)
+    	{
+    		mouthPoints = buildRect(dataPoints,2);
+    	}
+    	
+    	if(dataPoints.gotLeftEye == true)
+    	{
+    		rightEye = buildRect(dataPoints,3);
+    	}
+    	
+    	if(dataPoints.gotRightEye == true)
+    	{
+    		leftEye = buildRect(dataPoints,4);
+    	}
+  			
+    	Log.i(TAG, "Received data in final thread");
+      
     }
 
     @Override
     public void run() {
+    	
+    	
         initGL();
-        
-        mVertices = ByteBuffer.allocateDirect(mVerticesData.length * 4)
+      
+        FloatBuffer mVertices = ByteBuffer.allocateDirect(facePoints.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mVertices.put(mVerticesData).position(0);
+       
+     
+        while (!mFinished) {
+        	
+        mVertices.put(facePoints).position(0);
 
 
         int attribPosition = GLES20.glGetAttribLocation(mProgram,
@@ -83,7 +249,7 @@ class RenderThread extends Thread {
         GLES20.glUseProgram(mProgram);
         checkGlError();
 
-        while (!mFinished) {
+       
             checkCurrent();
 
             mVertices.position(0);
@@ -91,15 +257,78 @@ class RenderThread extends Thread {
                     GLES20.GL_FLOAT, false, 0, mVertices);
             checkGlError();
 
-            GLES20.glClearColor(1.0f, 0.6f, 0, 0);
+            GLES20.glClearColor(0.0f, 0.0f, 1.0f, 0);// this is for background color
             checkGlError();
 
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
             checkGlError();
-
+            
+            int uniformColor = GLES20.glGetUniformLocation(mProgram,"uniformColor");
+            GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.0f, 0.0f);   // set the color of the following object here
+            
             GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
             Log.d(TAG, "draw!!");
             checkGlError();
+            
+            
+            // draw mouth
+            if(dataPoints.gotMouth == true)
+            {
+                FloatBuffer mVertices_Mouth = ByteBuffer.allocateDirect(mouthPoints.length * 4)
+                        .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                
+            	mVertices_Mouth.put(mouthPoints).position(0);
+            	mVertices_Mouth.position(0);
+            	
+            	 GLES20.glVertexAttribPointer(attribPosition, 3,
+                         GLES20.GL_FLOAT, false, 0, mVertices_Mouth);
+                 checkGlError();
+                 
+                               
+                 GLES20.glUniform4f(uniformColor,0.0f, 1.0f, 0.0f, 0.0f);   // set the color of the following object here
+                 GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+                 Log.i(TAG, "Mouth Drawn");            	
+            }
+            
+            // draw right Eye
+            if(dataPoints.gotRightEye == true)
+            {
+                FloatBuffer mVertices_rtEye = ByteBuffer.allocateDirect(rightEye.length * 4)
+                        .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                
+                mVertices_rtEye.put(rightEye).position(0);
+                mVertices_rtEye.position(0);
+            	
+            	 GLES20.glVertexAttribPointer(attribPosition, 3,
+                         GLES20.GL_FLOAT, false, 0, mVertices_rtEye);
+                 checkGlError();
+                 
+                               
+                 GLES20.glUniform4f(uniformColor,1.0f, 0.6f, 0.0f, 0.0f);   // set the color of the following object here
+                 GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+                 Log.i(TAG, "Right Eye Drawn");            	
+            }
+            
+            // draw Left Eye
+            if(dataPoints.gotLeftEye == true)
+            {
+                FloatBuffer mVertices_lftEye = ByteBuffer.allocateDirect(leftEye.length * 4)
+                        .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                
+                mVertices_lftEye.put(leftEye).position(0);
+                mVertices_lftEye.position(0);
+            	
+            	 GLES20.glVertexAttribPointer(attribPosition, 3,
+                         GLES20.GL_FLOAT, false, 0, mVertices_lftEye);
+                 checkGlError();
+                 
+                               
+                 GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.6f, 0.0f);   // set the color of the following object here
+                 GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+                 Log.i(TAG, "Left Eye Drawn");            	
+            }
+            
+            
             
             try {
             if (!mEgl.eglSwapBuffers(mEglDisplay, mEglSurface));
@@ -214,17 +443,21 @@ class RenderThread extends Thread {
         return shader;
     }
 
+    
+    
     private void initGL() {
         final String vertexShaderSource = "attribute vec4 position;\n"
-                +
+                + "uniform vec4 uniformColor;\n"
+        		+ "varying vec4 fragmentColor;\n"+
                 "void main () {\n" +
                 "   gl_Position = position;\n" +
+                " fragmentColor = uniformColor;" +
                 "}";
 
         final String fragmentShaderSource = "precision mediump float;\n"
-                +
+                 + "varying highp vec4 fragmentColor;" +
                 "void main () {\n" +
-                "   gl_FragColor = vec4(1.0, 0.0, 0.0, 0.0);\n" +
+                "   gl_FragColor = fragmentColor;\n" +
                 "}";
 
         mEgl = (EGL10) EGLContext.getEGL();
@@ -323,6 +556,7 @@ public class TextureActivity extends Fragment implements TextureView.SurfaceText
 	private TextureView myTexture;
 	   private Camera mCamera;
 	private RenderThread mRenderThread;
+	public Face FaceVals;
 	   
 	
 
@@ -346,6 +580,8 @@ public class TextureActivity extends Fragment implements TextureView.SurfaceText
 		myTexture = (TextureView) getView().findViewById(R.id.textureView1);
 	    myTexture.setSurfaceTextureListener(this);
 		Log.i(TAG, "TextureActivity : onStart");
+		
+		FaceVals = new Face();
 		//this.getActivity().setContentView(myTexture);
 	}
 
@@ -355,8 +591,10 @@ public class TextureActivity extends Fragment implements TextureView.SurfaceText
 	   public void onSurfaceTextureAvailable(SurfaceTexture surface, int arg1,
 	   int arg2) {
 		  Log.i(TAG, "Entered onSurfaceTextureAvailable");
-		  new RenderThread(surface).start();
-	     
+		  
+		  Face dataVals = new Face();  
+		  mRenderThread =  new RenderThread(surface); // send data read to the thread
+	      mRenderThread.start();
 
 	   }
 	   
@@ -377,16 +615,50 @@ public class TextureActivity extends Fragment implements TextureView.SurfaceText
 		
 	}
 
-	@Override
-	public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+	public void onSurfaceTextureUpdatedManual() {
 		// TODO Auto-generated method stub
+		Log.i(TAG, "Face Avbl");
+		FaceVals = dataReadWrite(1,null);	
+		mRenderThread.updatePoints(FaceVals);
+	}
+	
+	public void setOnFrameAvailableListener (SurfaceTexture.OnFrameAvailableListener l)
+	{
 		
 	}
+	
+	public Face dataReadWrite(int flag, Face data) // 1 for read, 0 for write
+	{
+		if(flag == 0)
+		{
+			FaceVals = data;
+			Log.i(TAG, "Coordinates WRITE");
+			return null;
+		}
+		else
+		{
+			Log.i(TAG, "Coordinates READ");
+			return FaceVals;
+		}
+	}
+		
+	
+	
+	
 	
 	public void changeParamsreceivedfromInterface(Face[] val)
 	{
 		  Log.i(TAG, "Value received from Interface");
+		  onSurfaceTextureUpdatedManual();
+		  dataReadWrite(0,val[0]); // write only one face for now
 	      
+	}
+
+
+	@Override
+	public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
