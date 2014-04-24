@@ -487,7 +487,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
         if(sendObj.length > 0)
         {
         	cordinateData.sendfromSource(sendObj);
-        	Log.i(TAG, "Data Sent from FdActivity to Texture View");
+        	Log.i(TAG, "Data Sent from FdActivity to Texture View" + sendObj.length );
         }
         
         

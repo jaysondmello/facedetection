@@ -26,6 +26,7 @@ public class FraggerActivity extends FragmentActivity implements PointInterface 
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
+
 		}
 	}
 
