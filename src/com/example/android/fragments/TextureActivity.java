@@ -255,10 +255,10 @@ class RenderThread extends Thread {
         while (!mFinished) {
         	
             GLES20.glClearColor(0.0f, 0.0f, 1.0f, 0);// this is for background color
-            checkGlError();
+
 
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-            checkGlError();        
+     
          
         for(int i = 0; i < dataPoints.length; i++)
         {
@@ -269,13 +269,13 @@ class RenderThread extends Thread {
         	
         mVertices.put(facePoints[i]).position(0);
 
-        checkGlError();
+
 
         GLES20.glEnableVertexAttribArray(attribPosition);
-        checkGlError();
+
 
         GLES20.glUseProgram(mProgram);
-        checkGlError();
+
 
        
             checkCurrent();
@@ -283,14 +283,14 @@ class RenderThread extends Thread {
             mVertices.position(0);
             GLES20.glVertexAttribPointer(attribPosition, 3,
                     GLES20.GL_FLOAT, false, 0, mVertices);
-            checkGlError();
+
 
           
             GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.0f, 0.0f);   // set the color of the following object here
             
             GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
             Log.d(TAG, "Face drawn" + i);
-            checkGlError();
+
             
             
             // draw mouth
@@ -304,7 +304,7 @@ class RenderThread extends Thread {
             	
             	 GLES20.glVertexAttribPointer(attribPosition, 3,
                          GLES20.GL_FLOAT, false, 0, mVertices_Mouth);
-                 checkGlError();
+
                           
                  GLES20.glUniform4f(uniformColor,0.0f, 1.0f, 0.0f, 0.0f);   // set the color of the following object here
                  GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
@@ -322,7 +322,7 @@ class RenderThread extends Thread {
             	
             	 GLES20.glVertexAttribPointer(attribPosition, 3,
                          GLES20.GL_FLOAT, false, 0, mVertices_rtEye);
-                 checkGlError();
+
                                        
                  GLES20.glUniform4f(uniformColor,1.0f, 0.6f, 0.0f, 0.0f);   // set the color of the following object here
                  GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
@@ -340,7 +340,7 @@ class RenderThread extends Thread {
             	
             	 GLES20.glVertexAttribPointer(attribPosition, 3,
                          GLES20.GL_FLOAT, false, 0, mVertices_lftEye);
-                 checkGlError();   
+
                                
                  GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.6f, 0.0f);   // set the color of the following object here
                  GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
@@ -359,7 +359,7 @@ class RenderThread extends Thread {
             checkEglError();
 
             try {
-                Thread.sleep(3000);
+                Thread.sleep(5);
             } catch (InterruptedException e) {
                 // Ignore
             }
