@@ -230,6 +230,58 @@ class RenderThread extends Thread {
     	Log.i(TAG, "Received data in final thread");   
     }
 
+    private float[] drawCircle(int points,float radius)
+    {
+    	 float[] vertices=new float[(points+1)*3];
+    	 
+    	 
+    	    for(int i=0;i<(points+1)*3;i+=3){
+    	      double rad=(i*360/points*2)*(3.14/180);
+    	      vertices[i]=(float)Math.cos(rad)*radius;
+    	      vertices[i+1]=(float) Math.sin(rad)*radius;
+    	      vertices[i+2]=0;
+    	    }   
+    	    
+    	return vertices;
+    }
+    
+    private float[] DrawEllipse (int segments, float width, float height,float x, float y)
+    {
+    
+     float[] vertices = new float[segments*2];
+     int count=0;
+     
+     for (float i = 0; i < 360.0f; i+=(360.0f/segments))
+     {
+      vertices[count++] = (float) (Math.cos(Math.toRadians(i))*width) + x;
+      vertices[count++] = (float) (Math.sin(Math.toRadians(i))*height)+ y;
+     }
+
+     return vertices;
+    }
+    
+    private float[] DrawCircle(int circleSegments, float circleSize,float x, float y) 
+    {
+    	return DrawEllipse(circleSegments, circleSize, circleSize,x, y);
+    }
+    
+    private float findRadius(float x1, float y1, float x2, float y2)
+    {
+    	float a = (float) Math.pow((x1-x2),2);
+    	float b = (float) Math.pow((y1-y2), 2);
+    	return (float) (Math.sqrt(a+b))/2;
+    }
+    
+    private float[] findCenter(float x1,float y1,float x2,float y2)
+    {
+    	float[] answer = new float[2];
+    	
+    	answer[0]  = (x1+x2)/2;
+    	answer[1]  = (y1+y2)/2;
+    	return answer;
+    }
+    
+    
     @Override
     public void run() {
     	
@@ -252,43 +304,42 @@ class RenderThread extends Thread {
         
         int uniformColor = GLES20.glGetUniformLocation(mProgram,"uniformColor");
         
-        while (!mFinished) {
-        	
-            GLES20.glClearColor(0.0f, 0.0f, 1.0f, 0);// this is for background color
-
-
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-     
-         
-        for(int i = 0; i < dataPoints.length; i++)
-        {
-      
-        FloatBuffer mVertices = ByteBuffer.allocateDirect(facePoints[i].length * 4)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-
-        	
-        mVertices.put(facePoints[i]).position(0);
-
-
-
-        GLES20.glEnableVertexAttribArray(attribPosition);
-
-
+        GLES20.glClearColor(0.0f, 0.0f, 1.0f, 0);// this is for background color
+        
         GLES20.glUseProgram(mProgram);
 
+        
+        while (!mFinished) {
 
-       
-            checkCurrent();
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+
+        int numberofSegment = 60;
+          
+        for(int i = 0; i < dataPoints.length; i++)
+        {
+        
+        // find face circle params here
+        	float radius = findRadius(facePoints[i][0],facePoints[i][1],facePoints[i][9],facePoints[i][10]);
+        	float []centerCircle = findCenter(facePoints[i][0],facePoints[i][1],facePoints[i][9],facePoints[i][10]);
+        	float[] faceCircle = DrawCircle(numberofSegment,radius,centerCircle[0],centerCircle[1]);
+      
+        FloatBuffer mVertices = ByteBuffer.allocateDirect(faceCircle.length * 4)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+
+     mVertices.put(faceCircle).position(0);
+
+       GLES20.glEnableVertexAttribArray(attribPosition);
+
+        GLES20.glUseProgram(mProgram);
+         checkCurrent();
 
             mVertices.position(0);
-            GLES20.glVertexAttribPointer(attribPosition, 3,
+            GLES20.glVertexAttribPointer(attribPosition, 2,
                     GLES20.GL_FLOAT, false, 0, mVertices);
-
-
-          
+            
             GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.0f, 0.0f);   // set the color of the following object here
             
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+            GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, numberofSegment);
             Log.d(TAG, "Face drawn" + i);
 
             
@@ -348,7 +399,7 @@ class RenderThread extends Thread {
             }
             
         }   
-            
+           
             try {
             if (!mEgl.eglSwapBuffers(mEglDisplay, mEglSurface));
             } 

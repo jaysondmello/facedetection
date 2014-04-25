@@ -383,7 +383,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                 {
                 	if(j==0)
                 	{
-                	sendObj[i].gotRightEye = true;
+                	sendObj[i].gotLeftEye = true;
                 	sendObj[i].rightEye[0].x = calcScreen2Cart(eyesArray[j].tl().x,frameWidth,1);
                 	sendObj[i].rightEye[0].y = calcScreen2Cart(eyesArray[j].tl().y,frameHeight,0);
                 	sendObj[i].rightEye[1].x = calcScreen2Cart(eyesArray[j].br().x,frameWidth,1);
@@ -391,7 +391,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                 	}
                 	if(j==1)
                 	{
-                	sendObj[i].gotLeftEye = true;
+                	sendObj[i].gotRightEye = true;
                     sendObj[i].leftEye[0].x = calcScreen2Cart(eyesArray[j].tl().x,frameWidth,1);
                     sendObj[i].leftEye[0].y = calcScreen2Cart(eyesArray[j].tl().y,frameHeight,0);
                     sendObj[i].leftEye[1].x = calcScreen2Cart(eyesArray[j].br().x,frameWidth,1);
@@ -468,7 +468,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
         }
           
         
-        
+        /*
         // debug display 
         for (int i = 0; i <  facesArray.length; i++ )
         {
@@ -480,7 +480,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
         		Log.i(TAG, "Mouth Co-ordinates"+ sendObj[i].mouthPoints[0].x + "," +  sendObj[i].mouthPoints[0].y);
         		Log.i(TAG, "Mouth Co-ordinates"+ sendObj[i].mouthPoints[1].x + "," +  sendObj[i].mouthPoints[1].y);
         	}
-        }
+        }*/
         
         
         // send data if available
