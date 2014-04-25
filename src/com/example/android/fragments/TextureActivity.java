@@ -230,20 +230,7 @@ class RenderThread extends Thread {
     	Log.i(TAG, "Received data in final thread");   
     }
 
-    private float[] drawCircle(int points,float radius)
-    {
-    	 float[] vertices=new float[(points+1)*3];
-    	 
-    	 
-    	    for(int i=0;i<(points+1)*3;i+=3){
-    	      double rad=(i*360/points*2)*(3.14/180);
-    	      vertices[i]=(float)Math.cos(rad)*radius;
-    	      vertices[i+1]=(float) Math.sin(rad)*radius;
-    	      vertices[i+2]=0;
-    	    }   
-    	    
-    	return vertices;
-    }
+
     
     private float[] DrawEllipse (int segments, float width, float height,float x, float y)
     {
@@ -347,18 +334,24 @@ class RenderThread extends Thread {
             // draw mouth
             if(dataPoints[i].gotMouth == true)
             {
-                FloatBuffer mVertices_Mouth = ByteBuffer.allocateDirect(mouthPoints[i].length * 4)
+                // find mouth circle params here
+            	float radiusM = findRadius(mouthPoints[i][0],mouthPoints[i][1],mouthPoints[i][9],mouthPoints[i][10]);
+            	float []centerCircleM = findCenter(mouthPoints[i][0],mouthPoints[i][1],mouthPoints[i][9],mouthPoints[i][10]);
+            	float[] faceCircleM = DrawEllipse(numberofSegment,radiusM,radiusM*0.2f,centerCircleM[0],centerCircleM[1]);
+          
+            	
+                FloatBuffer mVertices_Mouth = ByteBuffer.allocateDirect(faceCircleM.length * 4)
                         .order(ByteOrder.nativeOrder()).asFloatBuffer();
                 
-            	mVertices_Mouth.put(mouthPoints[i]).position(0);
+            	mVertices_Mouth.put(faceCircleM).position(0);
             	mVertices_Mouth.position(0);
             	
-            	 GLES20.glVertexAttribPointer(attribPosition, 3,
+            	 GLES20.glVertexAttribPointer(attribPosition, 2,
                          GLES20.GL_FLOAT, false, 0, mVertices_Mouth);
 
                           
                  GLES20.glUniform4f(uniformColor,0.0f, 1.0f, 0.0f, 0.0f);   // set the color of the following object here
-                 GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+                 GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, numberofSegment);
                  Log.i(TAG, "Mouth Drawn");            	
             }
             
