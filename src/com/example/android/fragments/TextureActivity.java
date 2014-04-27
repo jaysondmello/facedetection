@@ -247,6 +247,21 @@ class RenderThread extends Thread {
      return vertices;
     }
     
+    private float[] DrawArc(int segments, float width, float height,float x, float y,float startAngle,float stopAngle)
+    {
+    
+     float[] vertices = new float[segments*2];
+     int count=0;
+     
+     for (float i = startAngle; i < stopAngle; i+=(stopAngle/segments))
+     {
+      vertices[count++] = (float) (Math.cos(Math.toRadians(i))*width) + x;
+      vertices[count++] = (float) (Math.sin(Math.toRadians(i))*height)+ y;
+     }
+
+     return vertices;
+    }
+    
     private float[] DrawCircle(int circleSegments, float circleSize,float x, float y) 
     {
     	return DrawEllipse(circleSegments, circleSize, circleSize,x, y);
@@ -309,7 +324,8 @@ class RenderThread extends Thread {
         	float radius = findRadius(facePoints[i][0],facePoints[i][1],facePoints[i][9],facePoints[i][10]);
         	float []centerCircle = findCenter(facePoints[i][0],facePoints[i][1],facePoints[i][9],facePoints[i][10]);
         	float[] faceCircle = DrawCircle(numberofSegment,radius,centerCircle[0],centerCircle[1]);
-      
+        	//float[] faceCircle = DrawArc(numberofSegment,radius,radius,centerCircle[0],centerCircle[1],200.0f,270.0f);
+        	
         FloatBuffer mVertices = ByteBuffer.allocateDirect(faceCircle.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
 
