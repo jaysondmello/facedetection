@@ -45,12 +45,15 @@ class RenderThread extends Thread {
     private EGLSurface mEglSurface;
     private EGLContext mEglContext;
     private int mProgram;
+    private int texVertexShader;
     private EGL10 mEgl;
     private GL11 mGl;
     private volatile boolean mFinished;
     private TextureView mTextureView;
     private Face[] dataPoints = null;
     private volatile boolean valuesUpdated = false;
+    private Resources resourceHandle;
+    private int TextureHandle;
    
     private final float[] mVerticesData = {
             -1.0f, 1.0f, 0.0f, 
@@ -68,13 +71,25 @@ class RenderThread extends Thread {
     private float[][] leftEye;
     private int sizeofSphereArray;
     private float stepSize = 0.3f; 
+    
+    private final float squareVertices[] = {
+        -1.0f, -1.0f,
+        1.0f, -1.0f,
+        -1.0f,  1.0f,
+        1.0f,  1.0f,
+    };
 
-    public RenderThread(SurfaceTexture surface) {
-        mSurface = surface;
+    private final float textureVertices[] = {
+        1.0f, 1.0f,
+        1.0f, 0.0f,
+        0.0f,  1.0f,
+        0.0f,  0.0f,
+    };
+
+    public RenderThread(Resources resources, SurfaceTexture surface) {
+        mSurface = surface;  
+        resourceHandle = resources;
         
-     
-        
-       
     }
    /* 
     tl.x,tl.y	 ------- br.x,tl.y
@@ -354,6 +369,42 @@ class RenderThread extends Thread {
         	Log.e(TAG, "Datapoints is NULL");   
         }
         
+        int attribPositionTexObj = GLES20.glGetAttribLocation(texVertexShader,
+                "position");  
+        int attribPositionTex = GLES20.glGetAttribLocation(texVertexShader,
+                "inputTextureCoordinate");     
+        
+        while (!mFinished) {
+         
+        	GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);//|GLES20.GL_DEPTH_BUFFER_BIT|GLES20.GL_STENCIL_BUFFER_BIT);
+        	
+        	GLES20.glUseProgram(texVertexShader);
+            GLES20.glActiveTexture( GLES20.GL_TEXTURE0);
+            GLES20.glBindTexture( GLES20.GL_TEXTURE_2D, TextureHandle);
+            int mTextureUniformHandle = GLES20.glGetUniformLocation(texVertexShader, "videoFrame");
+            GLES20.glUniform1i(mTextureUniformHandle, 0);  
+        
+        
+        
+             
+            FloatBuffer mTexObjVertices = ByteBuffer.allocateDirect(squareVertices.length * 4)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();   
+            mTexObjVertices.put(squareVertices).position(0);    
+            GLES20.glVertexAttribPointer(attribPositionTexObj, 2, GLES20.GL_FLOAT, false, 0, mTexObjVertices);
+            GLES20.glEnableVertexAttribArray(attribPositionTexObj);
+        
+        
+        
+        
+       
+        FloatBuffer mTexVertices = ByteBuffer.allocateDirect(textureVertices.length * 4)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();   
+        mTexVertices.put(textureVertices).position(0);    
+        GLES20.glVertexAttribPointer(attribPositionTex, 2, GLES20.GL_FLOAT, false, 0, mTexVertices);
+        GLES20.glEnableVertexAttribArray(attribPositionTex);
+        
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+        
         int attribPosition = GLES20.glGetAttribLocation(mProgram,
                 "position");
         
@@ -361,14 +412,15 @@ class RenderThread extends Thread {
         
         GLES20.glClearColor(0.0f, 0.0f, 1.0f, 0);// this is for background color
         
+        // start normal tracking rendering
         GLES20.glUseProgram(mProgram);
 
         // calc size of Sphere with standard stepSize
 
         
-        while (!mFinished) {
 
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);//|GLES20.GL_DEPTH_BUFFER_BIT|GLES20.GL_STENCIL_BUFFER_BIT);
+
+        
 
         int numberofSegment = 60;
         
@@ -614,7 +666,69 @@ class RenderThread extends Thread {
         return shader;
     }
 
+    private void buildTextureShader()
+    {
+    	 final String vertexShaderSource = "attribute vec4 position;\n"
+                 + "attribute vec4 inputTextureCoordinate;\n"
+         		+ "varying vec2 textureCoordinate;\n"+
+                 "void main () {\n" +
+                 "   gl_Position = position;\n" +
+                 " textureCoordinate = inputTextureCoordinate.xy;" +
+                 "}";
+    	 
+    	 final String fragmentShaderSource = "varying highp vec2 textureCoordinate;\n"
+                 + "uniform sampler2D videoFrame;" +
+                "void main () {\n" +
+                "  gl_FragColor = texture2D(videoFrame, textureCoordinate);\n" +
+                "}";
+    	 
+    	 texVertexShader = buildProgram(vertexShaderSource,
+                 fragmentShaderSource);
+
+    }
     
+    public int loadTexture()
+    {
+        final int[] textureHandle = new int[1];
+     
+        GLES20.glGenTextures(1, textureHandle, 0);
+     
+        if (textureHandle[0] != 0)
+        {
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inScaled = true;   //  pre-scaling
+     
+            // Read in the resource
+            final Bitmap bitmap = BitmapFactory.decodeResource(resourceHandle, R.drawable.brick, options);
+            
+            if(bitmap == null)
+            {
+            	Log.e(TAG, "Could not load bitmap");
+            	return 0;
+            }
+     
+            // Bind to the texture in OpenGL
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+     
+            // Set filtering
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+     
+            // Load the bitmap into the bound texture.
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+     
+            // Recycle the bitmap, since its data has been loaded into OpenGL.
+            bitmap.recycle();
+        }
+     
+        if (textureHandle[0] == 0)
+        {
+            throw new RuntimeException("Error loading texture.");
+        }
+     
+        Log.i(TAG, "Texture loaded successfully");
+        return textureHandle[0];
+    }
     
     private void initGL() {
         final String vertexShaderSource = "attribute vec4 position;\n"
@@ -707,9 +821,13 @@ class RenderThread extends Thread {
         mProgram = buildProgram(vertexShaderSource,
                 fragmentShaderSource);
         
+        buildTextureShader();
+        
         mFinished = false;
         
         sizeofSphereArray = getSizeofSphereIndex(stepSize);
+        
+        TextureHandle = loadTexture();
     }
 }
 
@@ -767,7 +885,7 @@ public class TextureActivity extends Fragment implements TextureView.SurfaceText
 		  Log.i(TAG, "Entered onSurfaceTextureAvailable");
 		  
 		  Face dataVals = new Face();  
-		  mRenderThread =  new RenderThread(surface); // send data read to the thread
+		  mRenderThread =  new RenderThread(getResources(),surface); // send data read to the thread
 	      mRenderThread.start();
 
 	   }
