@@ -50,7 +50,7 @@ class RenderThread extends Thread {
     private volatile boolean mFinished;
     private TextureView mTextureView;
     private Face[] dataPoints = null;
-    private volatile boolean updatedData = false;
+    private volatile boolean valuesUpdated = false;
    
     private final float[] mVerticesData = {
             -1.0f, 1.0f, 0.0f, 
@@ -66,6 +66,8 @@ class RenderThread extends Thread {
     private float[][] mouthPoints;
     private float[][] rightEye;
     private float[][] leftEye;
+    private int sizeofSphereArray;
+    private float stepSize = 0.3f; 
 
     public RenderThread(SurfaceTexture surface) {
         mSurface = surface;
@@ -227,7 +229,9 @@ class RenderThread extends Thread {
     		}
     	}	
   	
-    	Log.i(TAG, "Received data in final thread");   
+    	//Log.i(TAG, "Values updated true");   
+    	valuesUpdated = true;
+
     }
 
 
@@ -283,6 +287,55 @@ class RenderThread extends Thread {
     	return answer;
     }
     
+    private int getSizeofSphereIndex(float mStep)
+    {
+     	double DEG = Math.PI/180;
+        /**
+         * x = p * sin(phi) * cos(theta)
+         * y = p * sin(phi) * sin(theta)
+         * z = p * cos(phi)
+         */
+        double dTheta = mStep * DEG;
+        double dPhi = dTheta;
+    	int size = 0;
+    	
+    	for(double phi1 = -(Math.PI); phi1 <= Math.PI; phi1+=dPhi){ 
+       	 for(double theta = 0.0; theta <= (Math.PI * 2); theta+=dTheta) {
+       		 size++;
+       	 }
+       }
+       return size;
+    		   
+    }
+    
+    private float[] sBuild(double mStep,float mRaduis,float x,float y) {
+
+    	double DEG = Math.PI/180;
+        /**
+         * x = p * sin(phi) * cos(theta)
+         * y = p * sin(phi) * sin(theta)
+         * z = p * cos(phi)
+         */
+        double dTheta = mStep * DEG;
+        double dPhi = dTheta;
+
+        float []mBuffer = new float[sizeofSphereArray*3]; 
+        int points = 0;
+        
+        for(double phi = -(Math.PI); phi <= Math.PI; phi+=dPhi){
+            //for each stage calculating the slices
+        	 for(double theta = 0.0; theta <= (Math.PI * 2); theta+=dTheta) {
+        		 
+        		double temp = mRaduis * Math.sin(phi);
+            	mBuffer[points] = (float) ((temp * Math.cos(theta))+x) ;
+            	mBuffer[points+1] = ((float) ((temp * Math.sin(theta))+y));
+            	mBuffer[points+2] = ((float) ((mRaduis * Math.cos(phi))));
+                points+=3;
+            }
+        }
+        return mBuffer;
+    }
+
     
     @Override
     public void run() {
@@ -310,20 +363,58 @@ class RenderThread extends Thread {
         
         GLES20.glUseProgram(mProgram);
 
+        // calc size of Sphere with standard stepSize
+
         
         while (!mFinished) {
 
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);//|GLES20.GL_DEPTH_BUFFER_BIT|GLES20.GL_STENCIL_BUFFER_BIT);
 
         int numberofSegment = 60;
-          
-        for(int i = 0; i < dataPoints.length; i++)
+        
+      /*  float[] sBuffer = sBuild(0.2f,0.3f,0.1f,0.4f);
+        
+        FloatBuffer mVertices = ByteBuffer.allocateDirect(sBuffer.length * 4)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        
+        mVertices.put(sBuffer).position(0);
+
+        GLES20.glEnableVertexAttribArray(attribPosition);
+        
+        mVertices.position(0);
+        
+        GLES20.glVertexAttribPointer(attribPosition, 3,
+                GLES20.GL_FLOAT, false, 0, mVertices);
+        
+       
+       
+        GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.0f, 0.0f);   // set the color of the following object here
+        
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 0,sBuffer.length/3);*/
+        
+        
+         
+       for(int i = 0; i < dataPoints.length; i++)
         {
         
         // find face circle params here
+    	   while(valuesUpdated == false)
+    	   {
+    		   try {
+				sleep(150);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	   }
+       	Log.i(TAG, "Values updated false");  
+    	   
+    	   
         	float radius = findRadius(facePoints[i][0],facePoints[i][1],facePoints[i][9],facePoints[i][10]);
         	float []centerCircle = findCenter(facePoints[i][0],facePoints[i][1],facePoints[i][9],facePoints[i][10]);
         	float[] faceCircle = DrawCircle(numberofSegment,radius,centerCircle[0],centerCircle[1]);
+        	
+        	//float[] faceCircle =  sBuild(stepSize,radius,centerCircle[0],centerCircle[1]); // sphere
         	//float[] faceCircle = DrawArc(numberofSegment,radius,radius,centerCircle[0],centerCircle[1],200.0f,270.0f);
         	
         FloatBuffer mVertices = ByteBuffer.allocateDirect(faceCircle.length * 4)
@@ -333,7 +424,6 @@ class RenderThread extends Thread {
 
        GLES20.glEnableVertexAttribArray(attribPosition);
 
-        GLES20.glUseProgram(mProgram);
          checkCurrent();
 
             mVertices.position(0);
@@ -341,9 +431,27 @@ class RenderThread extends Thread {
                     GLES20.GL_FLOAT, false, 0, mVertices);
             
             GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.0f, 0.0f);   // set the color of the following object here
-            
+            //GLES20.glFrontFace(GLES20.GL_CW); // for sphere
             GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, numberofSegment);
             Log.d(TAG, "Face drawn" + i);
+            
+            // draw Left Eye
+            if(dataPoints[i].gotLeftEye == true)
+            {
+                FloatBuffer mVertices_lftEye = ByteBuffer.allocateDirect(leftEye[i].length * 4)
+                        .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                
+                mVertices_lftEye.put(leftEye[i]).position(0);
+                mVertices_lftEye.position(0);
+            	
+            	 GLES20.glVertexAttribPointer(attribPosition, 3,
+                         GLES20.GL_FLOAT, false, 0, mVertices_lftEye);
+
+                               
+                 GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.6f, 0.0f);   // set the color of the following object here
+                 GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+                 Log.i(TAG, "Left Eye Drawn");            	
+            }
 
             
             
@@ -389,23 +497,7 @@ class RenderThread extends Thread {
                  Log.i(TAG, "Right Eye Drawn");            	
             }
             
-            // draw Left Eye
-            if(dataPoints[i].gotLeftEye == true)
-            {
-                FloatBuffer mVertices_lftEye = ByteBuffer.allocateDirect(leftEye[i].length * 4)
-                        .order(ByteOrder.nativeOrder()).asFloatBuffer();
-                
-                mVertices_lftEye.put(leftEye[i]).position(0);
-                mVertices_lftEye.position(0);
-            	
-            	 GLES20.glVertexAttribPointer(attribPosition, 3,
-                         GLES20.GL_FLOAT, false, 0, mVertices_lftEye);
-
-                               
-                 GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.6f, 0.0f);   // set the color of the following object here
-                 GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
-                 Log.i(TAG, "Left Eye Drawn");            	
-            }
+           
             
         }   
            
@@ -616,6 +708,8 @@ class RenderThread extends Thread {
                 fragmentShaderSource);
         
         mFinished = false;
+        
+        sizeofSphereArray = getSizeofSphereIndex(stepSize);
     }
 }
 

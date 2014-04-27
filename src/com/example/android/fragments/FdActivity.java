@@ -381,17 +381,17 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
    
                for (int j = 0; j < eyesArray.length; j++)           // left and right eye
                 {
-                	if(j==0)
+                	if(j%2 == 0)
                 	{
-                	sendObj[i].gotLeftEye = true;
+                	sendObj[i].gotRightEye = true;
                 	sendObj[i].rightEye[0].x = calcScreen2Cart(eyesArray[j].tl().x,frameWidth,1);
                 	sendObj[i].rightEye[0].y = calcScreen2Cart(eyesArray[j].tl().y,frameHeight,0);
                 	sendObj[i].rightEye[1].x = calcScreen2Cart(eyesArray[j].br().x,frameWidth,1);
                 	sendObj[i].rightEye[1].y = calcScreen2Cart(eyesArray[j].br().y,frameHeight,0);
                 	}
-                	if(j==1)
+                	if(j%2 != 0)
                 	{
-                	sendObj[i].gotRightEye = true;
+                	sendObj[i].gotLeftEye = true;
                     sendObj[i].leftEye[0].x = calcScreen2Cart(eyesArray[j].tl().x,frameWidth,1);
                     sendObj[i].leftEye[0].y = calcScreen2Cart(eyesArray[j].tl().y,frameHeight,0);
                     sendObj[i].leftEye[1].x = calcScreen2Cart(eyesArray[j].br().x,frameWidth,1);
@@ -468,19 +468,24 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
         }
           
         
-        /*
+        
         // debug display 
         for (int i = 0; i <  facesArray.length; i++ )
         {
-        	Log.i(TAG, "Face Co-ordinates TL"+ sendObj[i].facePoints[0].x + "," +  sendObj[i].facePoints[0].y);
-        	Log.i(TAG, "Face Co-ordinates BR"+ sendObj[i].facePoints[1].x + "," +  sendObj[i].facePoints[1].y);
+        	//Log.i(TAG, "Face Co-ordinates TL"+ sendObj[i].facePoints[0].x + "," +  sendObj[i].facePoints[0].y);
+        	//Log.i(TAG, "Face Co-ordinates BR"+ sendObj[i].facePoints[1].x + "," +  sendObj[i].facePoints[1].y);
         	
-        	if(sendObj[i].gotMouth == true)
+        	if(sendObj[i].gotLeftEye == true)
         	{
-        		Log.i(TAG, "Mouth Co-ordinates"+ sendObj[i].mouthPoints[0].x + "," +  sendObj[i].mouthPoints[0].y);
-        		Log.i(TAG, "Mouth Co-ordinates"+ sendObj[i].mouthPoints[1].x + "," +  sendObj[i].mouthPoints[1].y);
+        		Log.i(TAG, "Left Eye Captured");
+
         	}
-        }*/
+        	if(sendObj[i].gotRightEye == true)
+        	{
+        		Log.i(TAG, "Right Eye Captured");
+
+        	}
+        }
         
         
         // send data if available
