@@ -482,7 +482,7 @@ class RenderThread extends Thread {
             GLES20.glVertexAttribPointer(attribPosition, 2,
                     GLES20.GL_FLOAT, false, 0, mVertices);
             
-            GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.0f, 0.0f);   // set the color of the following object here
+            GLES20.glUniform4f(uniformColor,0.4f, 0.0f, 0.6f, 0.0f);   // set the color of the following object here
             //GLES20.glFrontFace(GLES20.GL_CW); // for sphere
             GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, numberofSegment);
             Log.d(TAG, "Face drawn" + i);
@@ -500,7 +500,7 @@ class RenderThread extends Thread {
                          GLES20.GL_FLOAT, false, 0, mVertices_lftEye);
 
                                
-                 GLES20.glUniform4f(uniformColor,1.0f, 0.0f, 0.6f, 0.0f);   // set the color of the following object here
+                 GLES20.glUniform4f(uniformColor,0.4f, 0.0f, 0.6f, 0.0f);   // set the color of the following object here
                  GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
                  Log.i(TAG, "Left Eye Drawn");            	
             }
@@ -526,7 +526,7 @@ class RenderThread extends Thread {
                          GLES20.GL_FLOAT, false, 0, mVertices_Mouth);
 
                           
-                 GLES20.glUniform4f(uniformColor,0.0f, 1.0f, 0.0f, 0.0f);   // set the color of the following object here
+                 GLES20.glUniform4f(uniformColor,0.0f, 0.0f, 1.0f, 0.0f);   // set the color of the following object here
                  GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, numberofSegment);
                  Log.i(TAG, "Mouth Drawn");            	
             }
@@ -544,7 +544,7 @@ class RenderThread extends Thread {
                          GLES20.GL_FLOAT, false, 0, mVertices_rtEye);
 
                                        
-                 GLES20.glUniform4f(uniformColor,1.0f, 0.6f, 0.0f, 0.0f);   // set the color of the following object here
+                 GLES20.glUniform4f(uniformColor,0.4f, 0.0f, 0.6f, 0.0f);   // set the color of the following object here
                  GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
                  Log.i(TAG, "Right Eye Drawn");            	
             }
