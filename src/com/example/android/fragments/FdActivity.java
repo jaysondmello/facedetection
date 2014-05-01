@@ -378,10 +378,11 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                 	//Log.i(TAG, "Eye Found at ("+eyesArray[j].x+","+eyesArray[j].y+")");
                 }
               
-   
-               for (int j = 0; j < eyesArray.length; j++)           // left and right eye
+                double imageWidth = facesArray[i].br().x - facesArray[i].tl().x;
+
+               for (int j = 0; j < eyesArray.length && j < 2; j++)           // left and right eye
                 {
-                	if(j%2 == 0)
+                	if(eyesArray[j].tl().x >= facesArray[i].tl().x + imageWidth/2)
                 	{
                 	sendObj[i].gotRightEye = true;
                 	sendObj[i].rightEye[0].x = calcScreen2Cart(eyesArray[j].tl().x,frameWidth,1);
@@ -389,7 +390,7 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                 	sendObj[i].rightEye[1].x = calcScreen2Cart(eyesArray[j].br().x,frameWidth,1);
                 	sendObj[i].rightEye[1].y = calcScreen2Cart(eyesArray[j].br().y,frameHeight,0);
                 	}
-                	if(j%2 != 0)
+                	else
                 	{
                 	sendObj[i].gotLeftEye = true;
                     sendObj[i].leftEye[0].x = calcScreen2Cart(eyesArray[j].tl().x,frameWidth,1);
@@ -397,7 +398,8 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                     sendObj[i].leftEye[1].x = calcScreen2Cart(eyesArray[j].br().x,frameWidth,1);
                     sendObj[i].leftEye[1].y = calcScreen2Cart(eyesArray[j].br().y,frameHeight,0);	
                 	}              
-                }            
+                
+                }
         	}
         	
         	
@@ -447,8 +449,10 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
             		mouthArray = mouth.toArray();
             		//Log.i("Fdvuew","Mouth Count"+eyesArray.length);
             		
-
-                    for (int j = 0; j < mouthArray.length; j++)
+            	//mouthArray.length
+            	if(mouthArray.length > 0)	
+            	{
+                    for (int j = 0; j < 1; j++)
                     {
                     	mouthArray[j].x += lowerHalfx; // add offset of faces to the detected mouth / eye co-ordinates
                     	mouthArray[j].y += lowerHalfy;
@@ -461,7 +465,8 @@ public class FdActivity extends Fragment implements CvCameraViewListener2 {
                     	sendObj[i].mouthPoints[0].y = calcScreen2Cart(mouthArray[j].tl().y,frameHeight,0);
                     	sendObj[i].mouthPoints[1].x = calcScreen2Cart(mouthArray[j].br().x,frameWidth,1);
                     	sendObj[i].mouthPoints[1].y = calcScreen2Cart(mouthArray[j].br().y,frameHeight,0);   	
-                    }              
+                    }  
+            	}
             	}
             }
       	

@@ -323,7 +323,9 @@ class RenderThread extends Thread {
     		   
     }
     
-    private float[] sBuild(double mStep,float mRaduis,float x,float y) {
+    private float sphereBuffer[];
+    
+    private void sBuild(double mStep) {
 
     	double DEG = Math.PI/180;
         /**
@@ -334,21 +336,32 @@ class RenderThread extends Thread {
         double dTheta = mStep * DEG;
         double dPhi = dTheta;
 
-        float []mBuffer = new float[sizeofSphereArray*3]; 
         int points = 0;
         
         for(double phi = -(Math.PI); phi <= Math.PI; phi+=dPhi){
             //for each stage calculating the slices
         	 for(double theta = 0.0; theta <= (Math.PI * 2); theta+=dTheta) {
         		 
-        		double temp = mRaduis * Math.sin(phi);
-            	mBuffer[points] = (float) ((temp * Math.cos(theta))+x) ;
-            	mBuffer[points+1] = ((float) ((temp * Math.sin(theta))+y));
-            	mBuffer[points+2] = ((float) ((mRaduis * Math.cos(phi))));
+        		double temp = Math.sin(phi);
+        		sphereBuffer[points] = (float) ((temp * Math.cos(theta))) ;
+        		sphereBuffer[points+1] = ((float) ((temp * Math.sin(theta))));
+        		sphereBuffer[points+2] = ((float) (( Math.cos(phi))));
                 points+=3;
             }
         }
-        return mBuffer;
+    }
+    
+    private float []  DrawConfigSphere(float mRadius, float x, float y)
+    {
+    	float [] scaledSphere = new float[sphereBuffer.length];
+    	
+    	for(int i =0; i < sphereBuffer.length; i+=3 )
+    	{
+    		scaledSphere[i] =  	 sphereBuffer[i] * mRadius +x;
+    		scaledSphere[i+1] =  sphereBuffer[i] * mRadius +y;
+    		scaledSphere[i+2] =  sphereBuffer[i] * mRadius;
+     	}
+    	return scaledSphere;
     }
 
     
@@ -466,7 +479,7 @@ class RenderThread extends Thread {
         	float []centerCircle = findCenter(facePoints[i][0],facePoints[i][1],facePoints[i][9],facePoints[i][10]);
         	float[] faceCircle = DrawCircle(numberofSegment,radius,centerCircle[0],centerCircle[1]);
         	
-        	//float[] faceCircle =  sBuild(stepSize,radius,centerCircle[0],centerCircle[1]); // sphere
+        	//float[] faceCircle =  DrawConfigSphere(radius,centerCircle[0],centerCircle[1]); // sphere
         	//float[] faceCircle = DrawArc(numberofSegment,radius,radius,centerCircle[0],centerCircle[1],200.0f,270.0f);
         	
         FloatBuffer mVertices = ByteBuffer.allocateDirect(faceCircle.length * 4)
@@ -488,7 +501,7 @@ class RenderThread extends Thread {
             Log.d(TAG, "Face drawn" + i);
             
             // draw Left Eye
-            if(dataPoints[i].gotLeftEye == true)
+            if(dataPoints[i].gotLeftEye != null && dataPoints[i].gotLeftEye == true)
             {
                 FloatBuffer mVertices_lftEye = ByteBuffer.allocateDirect(leftEye[i].length * 4)
                         .order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -532,7 +545,7 @@ class RenderThread extends Thread {
             }
             
             // draw right Eye
-            if(dataPoints[i].gotRightEye == true)
+            if(dataPoints[i].gotRightEye != null && dataPoints[i].gotRightEye == true)
             {
                 FloatBuffer mVertices_rtEye = ByteBuffer.allocateDirect(rightEye[i].length * 4)
                         .order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -828,6 +841,9 @@ class RenderThread extends Thread {
         sizeofSphereArray = getSizeofSphereIndex(stepSize);
         
         TextureHandle = loadTexture();
+        
+        sphereBuffer =  new float[sizeofSphereArray*3]; 
+        sBuild(stepSize);
     }
 }
 
